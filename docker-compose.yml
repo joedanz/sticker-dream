@@ -15,11 +15,10 @@ services:
     volumes:
       # Persist certificates across container restarts
       - ./certs:/app/certs
-      # Mount CUPS socket for printer access (Linux only)
-      # On macOS, printing from Docker is not supported
-      - /var/run/cups:/var/run/cups:ro
-    # USB printer access - map specific device nodes instead of privileged mode
-    # Uncomment and adjust device paths if direct USB access is needed
+      # LINUX ONLY: Uncomment the line below for printer access via CUPS
+      # This path doesn't exist on macOS/Windows and will prevent container startup
+      # - /var/run/cups:/var/run/cups:ro
+    # LINUX ONLY: USB printer access - uncomment and adjust device paths as needed
     # devices:
     #   - /dev/usb:/dev/usb
     #   - /dev/bus/usb:/dev/bus/usb
