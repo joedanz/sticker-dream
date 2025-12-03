@@ -16,7 +16,7 @@ A voice-activated sticker printer. Press and hold the button, describe what you 
 Run the interactive setup:
 
 ```bash
-pnpm setup
+pnpm quickstart
 ```
 
 This will:
@@ -115,7 +115,7 @@ The image prints right away, which is magical. Sometimes you can goof up. In thi
 
 ## Certificate Renewal
 
-Certificates are valid for 365 days and auto-renew when they're within 30 days of expiration. You can regenerate manually by deleting the `certs/` folder and running `pnpm setup` again.
+Certificates are valid for 365 days and auto-renew when they're within 30 days of expiration. You can regenerate manually by deleting the `certs/` folder and running `pnpm quickstart` again.
 
 ## Ideas
 

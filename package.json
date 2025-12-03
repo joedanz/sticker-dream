@@ -8,7 +8,7 @@
     "pnpm": ">=9.10.0"
   },
   "scripts": {
-    "setup": "node scripts/setup.js",
+    "quickstart": "node scripts/setup.js",
     "dev": "concurrently \"pnpm server\" \"vite\"",
     "server": "node --env-file=.env --watch src/server.ts",
     "build": "vite build",
