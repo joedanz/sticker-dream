@@ -11,39 +11,95 @@ A voice-activated sticker printer. Press and hold the button, describe what you 
 3. Google Imagen generates a coloring page based on your description
 4. Image displays in browser and prints to USB thermal printer
 
-## Setup
+## Quick Start
 
-1. Install dependencies:
+Run the interactive setup:
 
 ```bash
-pnpm install
+pnpm setup
 ```
 
-2. Create `.env` file:
+This will:
+- Install dependencies
+- Prompt for your Gemini API key
+- Generate HTTPS certificates for local network access
+- Build for production
+
+Then start the server:
+
+```bash
+pnpm start
+```
+
+Scan the QR code shown in the terminal to access from your phone or tablet.
+
+## Setup Details
+
+### Requirements
+
+- Node.js 20.6.0 or later
+- pnpm 9.10.0 or later
+- OpenSSL (for certificate generation)
+
+### API Key
+
+You'll need a [Google AI Studio](https://aistudio.google.com/) API key with access to Imagen. The setup script will prompt you, or create a `.env` file manually:
 
 ```
 GEMINI_API_KEY=your_api_key_here
 ```
 
-3. Connect a USB thermal printer. Currently only supports USB printer in MacOS - I would like to get this running with bluetooth or a receipt printer instead.
+### Mobile Device Access (iOS/Android)
+
+The app uses HTTPS so your phone's microphone works over the local network. On first use:
+
+1. Start the server: `pnpm start`
+2. On your device, visit the certificate URL shown in the terminal (e.g., `https://192.168.1.x:3000/certs/cert.pem`)
+3. **iOS**: Install the profile in Settings > General > VPN & Device Management, then trust it in Settings > General > About > Certificate Trust Settings
+4. **Android**: Install from Settings > Security > Install from storage
+
+After trusting the certificate, access the app at the network URL shown in the terminal.
+
+### macOS Certificate Trust (Optional)
+
+To avoid browser warnings on your Mac:
+
+```bash
+sudo security add-trusted-cert -d -r trustRoot \
+  -k /Library/Keychains/System.keychain certs/cert.pem
+```
 
 ## Running
 
-Start the backend server:
+### Production Mode (Recommended)
 
 ```bash
-pnpm server
+pnpm start
 ```
 
-Start the frontend (in another terminal):
+Serves the built frontend and API over HTTPS on port 3000.
+
+### Development Mode
 
 ```bash
 pnpm dev
 ```
 
-Open `http://localhost:5173`.
+Runs the backend server and Vite dev server with hot reload.
 
-To use your phone, you'll need to visit the page on your local network. Since it uses microphone access, this needs to be a secure origin. I use Cloudflare tunnels for this.
+## Docker
+
+For always-on deployment (e.g., Raspberry Pi):
+
+```bash
+docker compose up -d
+```
+
+**Linux users**: To enable printing, uncomment the CUPS socket mount in `docker-compose.yml`:
+
+```yaml
+- /var/run/cups:/var/run/cups:ro
+```
 
 ## Printers
 
@@ -57,9 +113,13 @@ Theoretically a bluetooth printer will work as well, but I have not tested. I'd 
 
 The image prints right away, which is magical. Sometimes you can goof up. In this case, simply say "CANCEL", "ABORT" or "START OVER" as part of your recording.
 
+## Certificate Renewal
+
+Certificates are valid for 365 days and auto-renew when they're within 30 days of expiration. You can regenerate manually by deleting the `certs/` folder and running `pnpm setup` again.
+
 ## Ideas
 
-It would be great if this was more portable. That app has 2 pieces: Client and Server. The TTS happens on the client. The Gemini API calls and printing happens on the server.
+It would be great if this was more portable. The app has 2 pieces: Client and Server. The TTS happens on the client. The Gemini API calls and printing happens on the server.
 
 The server does not do anything computationally expensive - just API calls -, so it could theoretically be run on Raspberry PI or an ESP32, which may require re-writing in C++. The server also sends the data to the printer - so there would need to be drivers or use a lower level protocol use ESC/POS.
 
