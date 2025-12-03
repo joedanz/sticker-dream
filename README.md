@@ -54,11 +54,11 @@ GEMINI_API_KEY=your_api_key_here
 The app uses HTTPS so your phone's microphone works over the local network. On first use:
 
 1. Start the server: `pnpm start`
-2. On your device, visit the certificate URL shown in the terminal (e.g., `https://192.168.1.x:3000/certs/cert.pem`)
+2. On your device, visit the HTTP certificate URL shown in the terminal (e.g., `http://192.168.1.x:3080`)
 3. **iOS**: Install the profile in Settings > General > VPN & Device Management, then trust it in Settings > General > About > Certificate Trust Settings
 4. **Android**: Install from Settings > Security > Install from storage
 
-After trusting the certificate, access the app at the network URL shown in the terminal.
+After trusting the certificate, access the app at the HTTPS network URL (e.g., `https://192.168.1.x:3000`).
 
 ### macOS Certificate Trust (Optional)
 

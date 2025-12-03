@@ -6,6 +6,7 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
 import { createServer as createHttpsServer } from 'node:https';
+import { createServer as createHttpServer } from 'node:http';
 import * as fs from 'node:fs';
 import { GoogleGenAI } from "@google/genai";
 import { printToUSB, watchAndResumePrinters } from './print.ts';
@@ -14,6 +15,7 @@ import { printStartupBanner, getServerURLs, generateQRDataURL } from './network.
 
 const app = new Hono();
 const PORT = 3000;
+const CERT_HTTP_PORT = 3080; // HTTP port for certificate downloads (iOS can't access HTTPS before trusting cert)
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Enable CORS for Vite dev server
@@ -154,6 +156,7 @@ if (isProduction) {
 // Ensure certificates exist (generates if missing)
 const certPaths = ensureCerts();
 
+// Main HTTPS server
 serve({
   fetch: app.fetch,
   port: PORT,
@@ -163,6 +166,29 @@ serve({
     cert: fs.readFileSync(certPaths.cert),
   },
 }, async (info) => {
-  await printStartupBanner(info.port);
+  await printStartupBanner(info.port, CERT_HTTP_PORT);
+});
+
+// HTTP server just for certificate downloads (iOS needs this before trusting the cert)
+const certApp = new Hono();
+certApp.get('/', async (c) => {
+  const certPath = getCertPaths().cert;
+  try {
+    const cert = await fs.promises.readFile(certPath);
+    return new Response(cert, {
+      headers: {
+        'Content-Type': 'application/x-pem-file',
+        'Content-Disposition': 'attachment; filename="sticker-dream.pem"',
+      },
+    });
+  } catch {
+    return c.text('Certificate not found', 404);
+  }
+});
+
+serve({
+  fetch: certApp.fetch,
+  port: CERT_HTTP_PORT,
+  createServer: createHttpServer,
 });
 

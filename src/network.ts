@@ -69,8 +69,9 @@ export async function generateQRDataURL(text: string): Promise<string | null> {
 }
 
 // Print startup banner with connection info
-export async function printStartupBanner(port: number): Promise<void> {
+export async function printStartupBanner(port: number, certHttpPort?: number): Promise<void> {
   const urls = getServerURLs(port);
+  const ip = getLocalIP();
 
   console.log('\n' + '═'.repeat(50));
   console.log('  🎨 Sticker Dream');
@@ -82,9 +83,13 @@ export async function printStartupBanner(port: number): Promise<void> {
   const qr = await generateTerminalQR(urls.network);
   console.log(qr);
 
-  console.log('═'.repeat(50));
-  console.log('  First time on iOS? Visit:');
-  console.log(`  ${urls.network}/certs/cert.pem`);
-  console.log('  to download and trust the certificate.');
-  console.log('═'.repeat(50) + '\n');
+  if (certHttpPort) {
+    console.log('═'.repeat(50));
+    console.log('  📱 First time on iOS/Android?');
+    console.log(`  1. Visit: http://${ip}:${certHttpPort}`);
+    console.log('  2. Install the certificate profile');
+    console.log('  3. iOS: Settings > General > About > Certificate Trust');
+    console.log(`  4. Then access: ${urls.network}`);
+    console.log('═'.repeat(50) + '\n');
+  }
 }
