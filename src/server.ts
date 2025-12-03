@@ -94,7 +94,8 @@ app.get('/certs/cert.pem', async (c) => {
         'Content-Disposition': 'attachment; filename="sticker-dream.pem"',
       },
     });
-  } catch {
+  } catch (error) {
+    console.error('Certificate download failed:', error);
     return c.json({ error: 'Certificate not found' }, 404);
   }
 });
