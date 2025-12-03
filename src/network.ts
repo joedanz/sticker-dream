@@ -3,12 +3,20 @@
 
 import * as os from 'node:os';
 
+const IPV4_REGEX = /^(\d{1,3}\.){3}\d{1,3}$/;
+
+function isValidIPv4(ip: string): boolean {
+  if (!IPV4_REGEX.test(ip)) return false;
+  const octets = ip.split('.').map(Number);
+  return octets.every(octet => octet >= 0 && octet <= 255);
+}
+
 export function getLocalIP(): string {
   const interfaces = os.networkInterfaces();
   for (const name of Object.keys(interfaces)) {
     for (const iface of interfaces[name] || []) {
-      // Skip internal (loopback) and non-IPv4 addresses
-      if (iface.family === 'IPv4' && !iface.internal) {
+      // Skip internal (loopback), non-IPv4, and invalid addresses
+      if (iface.family === 'IPv4' && !iface.internal && isValidIPv4(iface.address)) {
         return iface.address;
       }
     }
