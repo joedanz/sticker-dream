@@ -57,6 +57,8 @@ export function generateCerts(): CertPaths {
 
   try {
     execFileSync('openssl', args, { stdio: 'pipe' });
+    // Restrict private key permissions (owner read/write only)
+    fs.chmodSync(KEY_PATH, 0o600);
     console.log(`✅ Generated certificates in ${CERT_DIR}`);
     console.log(`   Valid for: localhost, ${localIP}, ${hostname}`);
   } catch (error) {

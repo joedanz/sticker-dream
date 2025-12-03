@@ -119,6 +119,8 @@ async function setup() {
         '-subj', `/CN=${hostname}`,
         '-addext', `subjectAltName=${altNames}`,
       ], { stdio: 'pipe' });
+      // Restrict private key permissions (owner read/write only)
+      fs.chmodSync(keyPath, 0o600);
       console.log(`   ✅ Generated certificates in ${certsDir}`);
       console.log(`   Valid for: localhost, ${localIP}, ${hostname}`);
     } catch (error) {
