@@ -23,6 +23,11 @@ function isValidIPv4(ip) {
   return octets.every(octet => octet >= 0 && octet <= 255);
 }
 
+// Gemini API keys start with "AI" and are typically 39 characters
+function isValidGeminiApiKey(key) {
+  return typeof key === 'string' && key.startsWith('AI') && key.length >= 30;
+}
+
 function question(prompt) {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -68,11 +73,22 @@ async function setup() {
     printSection('Configuring API key');
     console.log('   No .env file found.\n');
 
-    const apiKey = await question('   Enter your GEMINI_API_KEY (or press Enter to skip): ');
+    let apiKey = await question('   Enter your GEMINI_API_KEY (or press Enter to skip): ');
+    apiKey = apiKey.trim();
 
-    if (apiKey.trim()) {
-      fs.writeFileSync(envPath, `GEMINI_API_KEY=${apiKey.trim()}\n`);
-      console.log('   ✅ Created .env file');
+    if (apiKey) {
+      let shouldSave = true;
+      if (!isValidGeminiApiKey(apiKey)) {
+        console.log('   ⚠️  Warning: API key format looks unusual (expected to start with "AI")');
+        const confirm = await question('   Save anyway? (y/N): ');
+        shouldSave = confirm.toLowerCase() === 'y';
+      }
+      if (shouldSave) {
+        fs.writeFileSync(envPath, `GEMINI_API_KEY=${apiKey}\n`);
+        console.log('   ✅ Created .env file');
+      } else {
+        console.log('   ⚠️  Skipped - create .env manually before running');
+      }
     } else {
       console.log('   ⚠️  Skipped - create .env manually before running');
     }
