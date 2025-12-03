@@ -160,6 +160,7 @@ const certPaths = ensureCerts();
 serve({
   fetch: app.fetch,
   port: PORT,
+  hostname: '0.0.0.0', // Listen on all IPv4 interfaces
   createServer: createHttpsServer,
   serverOptions: {
     key: fs.readFileSync(certPaths.key),
@@ -189,6 +190,7 @@ certApp.get('/', async (c) => {
 serve({
   fetch: certApp.fetch,
   port: CERT_HTTP_PORT,
+  hostname: '0.0.0.0', // Listen on all IPv4 interfaces
   createServer: createHttpServer,
 });
 
