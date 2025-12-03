@@ -18,7 +18,7 @@ export default defineConfig(({ command }) => {
     server: {
       port: 7767,
       host: true,
-      allowedHosts: ['local.wesbos.com', 'sticker.local'],
+      allowedHosts: ['sticker.local'],
       https: useHttps ? {
         key: fs.readFileSync(keyPath),
         cert: fs.readFileSync(certPath),
