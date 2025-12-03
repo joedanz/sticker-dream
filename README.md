@@ -55,10 +55,10 @@ The app uses HTTPS so your phone's microphone works over the local network. On f
 
 1. Start the server: `pnpm start`
 2. On your device, visit the HTTP certificate URL shown in the terminal (e.g., `http://192.168.1.x:3080`)
-3. **iOS**: Install the profile in Settings > General > VPN & Device Management, then trust it in Settings > General > About > Certificate Trust Settings
+3. **iOS**: Go to Settings > General > VPN & Device Management, tap the downloaded profile, and tap Install
 4. **Android**: Install from Settings > Security > Install from storage
 
-After trusting the certificate, access the app at the HTTPS network URL (e.g., `https://192.168.1.x:3000`).
+After installing the certificate, access the app at the HTTPS network URL (e.g., `https://192.168.1.x:3000`).
 
 ### macOS Certificate Trust (Optional)
 

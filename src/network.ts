@@ -87,8 +87,8 @@ export async function printStartupBanner(port: number, certHttpPort?: number): P
     console.log('═'.repeat(50));
     console.log('  📱 First time on iOS/Android?');
     console.log(`  1. Visit: http://${ip}:${certHttpPort}`);
-    console.log('  2. Install the certificate profile');
-    console.log('  3. iOS: Settings > General > About > Certificate Trust');
+    console.log('  2. iOS: Settings > General > VPN & Device Management');
+    console.log('  3. Tap the profile and tap Install');
     console.log(`  4. Then access: ${urls.network}`);
     console.log('═'.repeat(50) + '\n');
   }
