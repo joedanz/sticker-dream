@@ -92,8 +92,10 @@ export function generateCerts(): CertPaths {
     fs.chmodSync(KEY_PATH, 0o600);
     console.log(`✅ Generated certificates in ${CERT_DIR}`);
     console.log(`   Valid for: localhost, ${localIP}, ${hostname}`);
-  } catch (error) {
-    throw new Error(`Failed to generate certificates: ${error}`);
+  } catch {
+    console.error('❌ Failed to generate certificates');
+    console.error('   Make sure openssl is installed and available in PATH');
+    throw new Error('Certificate generation failed - openssl may not be installed');
   }
 
   return getCertPaths();
