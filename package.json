@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "Voice-activated sticker generator and printer for kids",
   "main": "index.js",
+  "engines": {
+    "node": ">=20.6.0",
+    "pnpm": ">=9.10.0"
+  },
   "scripts": {
     "setup": "node scripts/setup.js",
     "dev": "concurrently \"pnpm server\" \"vite\"",
