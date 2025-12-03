@@ -14,6 +14,15 @@ const projectRoot = path.dirname(__dirname);
 
 process.chdir(projectRoot);
 
+const IPV4_REGEX = /^(\d{1,3}\.){3}\d{1,3}$/;
+
+function isValidIPv4(ip) {
+  if (!IPV4_REGEX.test(ip)) return false;
+  // Verify each octet is 0-255
+  const octets = ip.split('.').map(Number);
+  return octets.every(octet => octet >= 0 && octet <= 255);
+}
+
 function question(prompt) {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -89,7 +98,7 @@ async function setup() {
     let localIP = '127.0.0.1';
     for (const name of Object.keys(interfaces)) {
       for (const iface of interfaces[name] || []) {
-        if (iface.family === 'IPv4' && !iface.internal) {
+        if (iface.family === 'IPv4' && !iface.internal && isValidIPv4(iface.address)) {
           localIP = iface.address;
           break;
         }
@@ -125,12 +134,12 @@ async function setup() {
 
   // 6. Print success and instructions
   const platform = process.platform;
-  const interfaces = os.networkInterfaces();
-  let localIP = '127.0.0.1';
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name] || []) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        localIP = iface.address;
+  const interfaces2 = os.networkInterfaces();
+  let localIP2 = '127.0.0.1';
+  for (const name of Object.keys(interfaces2)) {
+    for (const iface of interfaces2[name] || []) {
+      if (iface.family === 'IPv4' && !iface.internal && isValidIPv4(iface.address)) {
+        localIP2 = iface.address;
         break;
       }
     }
@@ -154,7 +163,7 @@ async function setup() {
 
   console.log('   iOS devices:');
   console.log(`   1. Start the server: pnpm start`);
-  console.log(`   2. On iPad/iPhone, visit: https://${localIP}:3000/certs/cert.pem`);
+  console.log(`   2. On iPad/iPhone, visit: https://${localIP2}:3000/certs/cert.pem`);
   console.log('   3. Install the profile in Settings > General > VPN & Device Management');
   console.log('   4. Trust it in Settings > General > About > Certificate Trust Settings\n');
 
