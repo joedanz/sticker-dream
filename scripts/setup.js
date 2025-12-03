@@ -28,6 +28,19 @@ function isValidGeminiApiKey(key) {
   return typeof key === 'string' && key.startsWith('AI') && key.length >= 30;
 }
 
+// Get local network IP address (IPv4, non-loopback)
+function getLocalIP() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name] || []) {
+      if (iface.family === 'IPv4' && !iface.internal && isValidIPv4(iface.address)) {
+        return iface.address;
+      }
+    }
+  }
+  return '127.0.0.1';
+}
+
 function question(prompt) {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -113,18 +126,7 @@ async function setup() {
       fs.mkdirSync(certsDir, { recursive: true });
     }
 
-    // Get local IP for certificate
-    const interfaces = os.networkInterfaces();
-    let localIP = '127.0.0.1';
-    for (const name of Object.keys(interfaces)) {
-      for (const iface of interfaces[name] || []) {
-        if (iface.family === 'IPv4' && !iface.internal && isValidIPv4(iface.address)) {
-          localIP = iface.address;
-          break;
-        }
-      }
-    }
-
+    const localIP = getLocalIP();
     const hostname = 'sticker.local';
     const altNames = `DNS:${hostname},DNS:localhost,IP:127.0.0.1,IP:${localIP}`;
 
@@ -160,16 +162,7 @@ async function setup() {
 
   // 6. Print success and instructions
   const platform = process.platform;
-  const interfaces2 = os.networkInterfaces();
-  let localIP2 = '127.0.0.1';
-  for (const name of Object.keys(interfaces2)) {
-    for (const iface of interfaces2[name] || []) {
-      if (iface.family === 'IPv4' && !iface.internal && isValidIPv4(iface.address)) {
-        localIP2 = iface.address;
-        break;
-      }
-    }
-  }
+  const localIP2 = getLocalIP();
 
   console.log('\n' + '═'.repeat(50));
   console.log('  ✅ Setup complete!');
