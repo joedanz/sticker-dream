@@ -13,6 +13,8 @@ export function getLocalIP(): string {
       }
     }
   }
+  console.warn('⚠️  No network interface found - remote access will not work');
+  console.warn('   Connect to a network and restart for device access');
   return '127.0.0.1';
 }
 
