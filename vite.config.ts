@@ -18,7 +18,7 @@ export default defineConfig(({ command }) => {
     server: {
       port: 7767,
       host: true,
-      allowedHosts: ['sticker.local'],
+      allowedHosts: true, // Allow access via local IP addresses
       https: useHttps ? {
         key: fs.readFileSync(keyPath),
         cert: fs.readFileSync(certPath),
