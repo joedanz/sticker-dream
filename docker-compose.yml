@@ -18,6 +18,8 @@ services:
       # Mount CUPS socket for printer access (Linux only)
       # On macOS, printing from Docker is not supported
       - /var/run/cups:/var/run/cups:ro
-    # USB printer access requires privileged mode on Linux
-    # Remove this line if you don't need printing
-    privileged: true
+    # USB printer access - map specific device nodes instead of privileged mode
+    # Uncomment and adjust device paths if direct USB access is needed
+    # devices:
+    #   - /dev/usb:/dev/usb
+    #   - /dev/bus/usb:/dev/bus/usb
