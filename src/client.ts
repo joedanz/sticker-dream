@@ -87,7 +87,8 @@ async function resetRecorder() {
       return;
     }
 
-    // Actually generate and print the image!
+    // Generate and print the image
+    recordBtn.textContent = "Generating...";
     await generateAndPrint(text);
 
     // Stop loading state
