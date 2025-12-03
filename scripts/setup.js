@@ -65,7 +65,11 @@ async function setup() {
 
   // 2. Install dependencies
   printSection('Installing dependencies');
-  spawnSync('pnpm', ['install'], { stdio: 'inherit' });
+  const installResult = spawnSync('pnpm', ['install'], { stdio: 'inherit' });
+  if (installResult.status !== 0) {
+    console.error('❌ Failed to install dependencies');
+    process.exit(1);
+  }
 
   // 3. Check for .env
   const envPath = path.join(projectRoot, '.env');
@@ -148,7 +152,11 @@ async function setup() {
 
   // 5. Build for production
   printSection('Building for production');
-  spawnSync('pnpm', ['build'], { stdio: 'inherit' });
+  const buildResult = spawnSync('pnpm', ['build'], { stdio: 'inherit' });
+  if (buildResult.status !== 0) {
+    console.error('❌ Build failed');
+    process.exit(1);
+  }
 
   // 6. Print success and instructions
   const platform = process.platform;
