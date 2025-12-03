@@ -1,11 +1,20 @@
+// ABOUTME: Main server for Sticker Dream - handles image generation, printing, and serves the app.
+// ABOUTME: Runs over HTTPS for local network access with microphone permissions.
+
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
+import { createServer as createHttpsServer } from 'node:https';
+import * as fs from 'node:fs';
 import { GoogleGenAI } from "@google/genai";
 import { printToUSB, watchAndResumePrinters } from './print.ts';
+import { ensureCerts, getCertPaths } from './certs.ts';
+import { printStartupBanner, getServerURLs, generateQRDataURL } from './network.ts';
 
 const app = new Hono();
 const PORT = 3000;
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Enable CORS for Vite dev server
 app.use('/*', cors());
@@ -60,6 +69,38 @@ async function generateImage(prompt: string): Promise<Buffer | null> {
 }
 
 /**
+ * QR code endpoint for easy mobile access
+ */
+app.get('/api/qr', async (c) => {
+  const urls = getServerURLs(PORT);
+  const qr = await generateQRDataURL(urls.network);
+  return c.json({
+    url: urls.network,
+    localUrl: urls.local,
+    qr,
+  });
+});
+
+/**
+ * Serve certificate for iOS installation
+ */
+app.get('/certs/cert.pem', async (c) => {
+  const certPath = getCertPaths().cert;
+  try {
+    const cert = await fs.promises.readFile(certPath);
+    return new Response(cert, {
+      headers: {
+        'Content-Type': 'application/x-pem-file',
+        'Content-Disposition': 'attachment; filename="sticker-dream.pem"',
+      },
+    });
+  } catch (error) {
+    console.error('Certificate download failed:', error);
+    return c.json({ error: 'Certificate not found' }, 404);
+  }
+});
+
+/**
  * API endpoint to generate and print image
  */
 app.post('/api/generate', async (c) => {
@@ -105,10 +146,23 @@ app.post('/api/generate', async (c) => {
   }
 });
 
+// In production, serve the built frontend from ./dist
+if (isProduction) {
+  app.use('/*', serveStatic({ root: './dist' }));
+}
+
+// Ensure certificates exist (generates if missing)
+const certPaths = ensureCerts();
+
 serve({
   fetch: app.fetch,
   port: PORT,
-}, (info) => {
-  console.log(`🚀 Server running at http://localhost:${info.port}`);
+  createServer: createHttpsServer,
+  serverOptions: {
+    key: fs.readFileSync(certPaths.key),
+    cert: fs.readFileSync(certPaths.cert),
+  },
+}, async (info) => {
+  await printStartupBanner(info.port);
 });
 

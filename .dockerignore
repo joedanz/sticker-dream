@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+
+# Build output (we rebuild in container)
+dist
+
+# Local environment (passed via env_file in compose)
+.env
+.env.*
+
+# Certificates (generated at runtime)
+certs
+
+# Git
+.git
+.gitignore
+
+# Editor and OS
+.DS_Store
+*.swp
+*.swo
+.vscode
+.idea
+
+# Logs
+*.log
+npm-debug.log*

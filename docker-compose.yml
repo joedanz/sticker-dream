@@ -1,0 +1,24 @@
+# ABOUTME: Docker Compose configuration for Sticker Dream.
+# ABOUTME: Single command deployment with printer support on Linux.
+
+services:
+  sticker-dream:
+    build: .
+    container_name: sticker-dream
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # Persist certificates across container restarts
+      - ./certs:/app/certs
+      # LINUX ONLY: Uncomment the line below for printer access via CUPS
+      # This path doesn't exist on macOS/Windows and will prevent container startup
+      # - /var/run/cups:/var/run/cups:ro
+    # LINUX ONLY: USB printer access - uncomment and adjust device paths as needed
+    # devices:
+    #   - /dev/usb:/dev/usb
+    #   - /dev/bus/usb:/dev/bus/usb
