@@ -29,7 +29,7 @@ export function getServerURLs(port: number): { local: string; network: string } 
 export async function generateTerminalQR(text: string): Promise<string> {
   // Dynamic import to handle the optional dependency
   try {
-    const QRCode = await import('qrcode');
+    const { default: QRCode } = await import('qrcode');
     return QRCode.toString(text, {
       type: 'terminal',
       small: true,
@@ -44,7 +44,7 @@ export async function generateTerminalQR(text: string): Promise<string> {
 // Generate QR as data URL for embedding in HTML
 export async function generateQRDataURL(text: string): Promise<string | null> {
   try {
-    const QRCode = await import('qrcode');
+    const { default: QRCode } = await import('qrcode');
     return QRCode.toDataURL(text, {
       width: 256,
       margin: 2,
